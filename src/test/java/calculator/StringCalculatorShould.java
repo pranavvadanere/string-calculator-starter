@@ -1,43 +1,33 @@
-package calculator;
+public class StringCalculator {
+    public int add(String input) {
+        String[] numbers = input.split(",|\n");
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-class StringCalculatorShould {
-     private StringCalculator calculator;
-     @Rule
-    public ExpectedException thrown = ExpectedException.none();
-     @Before
-    public void initialize() {
-        calculator = new StringCalculator();
+        if (input.isEmpty()) {
+            return 0;
+        } else if (numbers.length > 1) {
+            return getSum(numbers);
+        }
+        return stringToInt(input);
     }
 
-
-    @Test
-    void empty_string_should_return_0() {
-        assertEquals(0, calculator.add(""));
-    }
-        @Test
-    public void numberStringShouldReturnSameNumber() {
-        assertEquals(calculator.add("1"), 1);
-        assertEquals(calculator.add("5"), 5);
-    }
-
-    @Test
-    void string_with_single_number_should_return_number_as_int() {
-        StringCalculator stringCalculator = new StringCalculator();
-        assertEquals(1, stringCalculator.add("1"));
-    }
-     @Test
-    public void numbersCommaDelimitedShouldBeSummed() {
-        assertEquals(calculator.add("1,2"), 3);
-        assertEquals(25, calculator.add("10,15"));
+    private int getSum(String[] numbers) {
+        int sum = 0;
+        for (String currentNumber:numbers) {
+            if (stringToInt(currentNumber) > 1000) {
+                continue;
+            }
+            sum += stringToInt(currentNumber);
+        }
+        return sum;
     }
 
-    @Test
-    public void numbersNewlineDelimitedShouldBeSummed() {
-        assertEquals(calculator.add("1\n2"), 3);
-        assertEquals(calculator.add("11\n13"), 24);
+    private int stringToInt(String number) {
+        int num = Integer.parseInt(number);
+        if (num < 0) {
+            throw new IllegalArgumentException("Negative input!");
+        } else {
+            return num;
+        }
     }
+
 }
