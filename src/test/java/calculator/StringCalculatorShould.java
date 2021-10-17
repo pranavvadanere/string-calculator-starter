@@ -1,33 +1,64 @@
-public class StringCalculator {
-    public int add(String input) {
-        String[] numbers = input.split(",|\n");
 
-        if (input.isEmpty()) {
-            return 0;
-        } else if (numbers.length > 1) {
-            return getSum(numbers);
-        }
-        return stringToInt(input);
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.assertEquals;
+
+
+public class StringCalculatorTest {
+
+    private StringCalculator calculator;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Before
+    public void initialize() {
+        calculator = new StringCalculator();
     }
 
-    private int getSum(String[] numbers) {
-        int sum = 0;
-        for (String currentNumber:numbers) {
-            if (stringToInt(currentNumber) > 1000) {
-                continue;
-            }
-            sum += stringToInt(currentNumber);
-        }
-        return sum;
+    @Test
+    public void emptyStringShouldReturn0() {
+        assertEquals(calculator.add(""), 0);
     }
 
-    private int stringToInt(String number) {
-        int num = Integer.parseInt(number);
-        if (num < 0) {
-            throw new IllegalArgumentException("Negative input!");
-        } else {
-            return num;
-        }
+    @Test
+    public void numberStringShouldReturnSameNumber() {
+        assertEquals(calculator.add("1"), 1);
+        assertEquals(calculator.add("5"), 5);
     }
 
+    @Test
+    public void numbersCommaDelimitedShouldBeSummed() {
+        assertEquals(calculator.add("1,2"), 3);
+        assertEquals(25, calculator.add("10,15"));
+    }
+
+    @Test
+    public void numbersNewlineDelimitedShouldBeSummed() {
+        assertEquals(calculator.add("1\n2"), 3);
+        assertEquals(calculator.add("11\n13"), 24);
+    }
+
+    @Test
+    public void threeNumbersDelimitedAnywayShouldBeSummed() {
+        assertEquals(calculator.add("1,2,3"), 6);
+        assertEquals(calculator.add("5\n2\n3"), 10);
+    }
+
+    @Test
+    public void negativeInputReturnsException() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Negative input!");
+        calculator.add("-1");
+        calculator.add("-5,10\n-15");
+    }
+
+    @Test
+    public void numbersGreaterThan1000AreIgnored() {
+        assertEquals(calculator.add("5,12,1001"), 17);
+        assertEquals(calculator.add("14124,22\n4,1214"), 26);
+    }
 }
